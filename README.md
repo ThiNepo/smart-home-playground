@@ -6,8 +6,7 @@ house responds to their commands.
 
 ![Smart Home Playground with an interactive floor plan and device inspector](design/playground-v2.png)
 
-Actual application in Offline mode at 1920 x 1080, with actuators manually
-enabled to demonstrate lighting, open doors, cooling, and irrigation.
+The playground running in Offline mode at 1920 x 1080.
 
 ## What it provides
 
@@ -20,11 +19,11 @@ enabled to demonstrate lighting, open doors, cooling, and irrigation.
 - A time-only clock: one simulated day takes four real minutes by default.
 - Authenticated MQTT in Docker, with a public WSS tunnel for remote students.
 
-**Students write the automation.** The simulator models the environment and
-actuators; it has no built-in rules to switch lights, start watering, or run
-schedules. Sensor values and the clock are read-only through the MQTT command
-API. Manual doors and windows are operated locally; only the motorized garage
-accepts remote opening commands.
+**Students write the automation.** The simulator provides the environment,
+sensors, and actuators. Students build rules for lighting, irrigation, and
+schedules in their own programs. The local simulation generates sensor
+readings and the clock. Manual doors and windows are operated in the scene;
+the motorized garage also accepts MQTT commands.
 
 Built with Python, Pyglet, Paho MQTT, Mosquitto, and Cloudflare Tunnel.
 
@@ -71,15 +70,11 @@ Classroom access can be paused while local controls and telemetry remain active.
 The connection panel and `.runtime/connection.json` contain the current
 endpoint and credentials. The shared username is `classroom`; a six-character
 alphanumeric password is generated locally and reused between sessions.
-Each student client uses a unique connection ID. This shared account has
-broker read/write access to `house/#`, so the demo assumes trusted classroom
-participants: custom clients can publish counterfeit telemetry. The command
-API rejects sensor writes; the broker does not enforce telemetry ownership.
+All students share the MQTT account and can subscribe and publish to
+`house/#`. Each student client uses a unique connection ID.
 
 The public tunnel address changes between sessions. Startup waits up to
-90 seconds for it; if unavailable, local MQTT remains available. The tunnel
-is temporary and has no uptime guarantee. Runtime credentials and the Python
-virtual environment are excluded from Git.
+90 seconds for it; if unavailable, local MQTT remains available.
 
 ## Simulation configuration
 
@@ -156,11 +151,14 @@ After setup, run pytest from the repository root:
 
 Integration tests use an isolated broker, temporary credentials, and separate
 ports. To include a real public WSS connection, set
-`$env:SMART_HOUSE_REMOTE_TEST = '1'` before running them. Concurrent classroom
-capacity has not been load-tested.
+`$env:SMART_HOUSE_REMOTE_TEST = '1'` before running them.
 
 To render a preview without starting Docker:
 
 ```powershell
 .\.venv\Scripts\python.exe main.py --offline --screenshot .runtime/preview.png
 ```
+
+## License
+
+Licensed under the [Apache License 2.0](LICENSE).
