@@ -1,0 +1,27 @@
+{
+  "clock": {
+    "real_seconds_per_day": 240,
+    "start_time": "08:00",
+    "publish_interval_minutes": 1
+  },
+  "devices": {
+    "read_interval": 1,
+    "publish_interval": 2
+  },
+  "environment": {
+    "initial_moisture": 55,
+    "drying_rate": 0.55,
+    "watering_rate": 5,
+    "initial_temperature": 24,
+    "ambient_temperature": 26,
+    "ambient_rate": 0.025,
+    "conditioning_rate": 0.3,
+    "car_present": true,
+    "motion_timeout": 8
+  },
+  "openings": {
+    "manual_travel_time": 1,
+    "window_travel_time": 0.7,
+    "garage_travel_time": 2
+  }
+}

@@ -1,0 +1,46 @@
+SMART HOUSE — INTERFACE PROPOSAL V1
+Status: visual proposal awaiting user approval. Not implemented in the application.
+Artifact: interface-proposal-v1.png
+Generation method: built-in imagegen tool.
+
+LAYOUT FOR REVIEW
+- One integrated property plan: living room, kitchen, hall, garage, terrace, and garden.
+- Strict top-down view with consistent architectural detail and positioned devices.
+- All controls, device settings, irrigation controls, and connection details on the right.
+- English UI copy with aligned typography, restrained separators, and readable spacing.
+- No framework credits, protocol flow captions, or debug text in the main interface.
+- Shared MQTT account. Six-character alphanumeric example password: A7K2M9.
+- Broker URL and password in this image are illustrative, not live credentials.
+
+FUNCTIONAL CONTRACT TO IMPLEMENT ONLY AFTER APPROVAL
+- A selected device exposes its current reading, operating state, and applied configuration.
+- Read interval and publish interval are separate sensor settings.
+- A device /state topic should report current state and applied configuration.
+- A dedicated configuration command topic should change device settings; proposed suffix: /config/set.
+- The application should confirm successfully applied settings through /state.
+- Existing application behavior and live credentials have not been changed for this proposal.
+
+APPROVAL FOCUS
+- Overall composition and visual quality.
+- Integration of the garden with the house.
+- Placement of devices and right-hand controls.
+- Which settings and connection details should remain visible.
+
+GENERATION PROMPT
+Use case: ui-mockup.
+Asset type: one high-fidelity desktop application UI proposal image for approval, landscape approximately 1600 by 1000. This is a full screen product mockup, not a photo of a monitor, not a device mockup, no browser chrome.
+Primary request: Design a polished, professional smart house simulator interface, all text in English, with a large genuinely top-down two-dimensional architectural floor plan and an integrated outdoor garden in the SAME property plan. All controls and MQTT connection details belong in a right-hand inspector panel. Prioritize excellent composition, accurate architectural connections, restrained interface hierarchy and perfectly straight, legible, consistent text baselines.
+
+Layout: thin 64px white header with "Smart House" at left and small green "Connected" at right. Below, main canvas occupies about 72% of the width on a very light warm-gray background. A white inspector at right occupies about 28% separated by a subtle vertical hairline. No dashboard cards or controls below the plan. No distracting footer, slogans, technology credits, protocol diagrams or decorative jargon. Use clean modern sans-serif typography with an 8px spacing system, crisp icons, neutral charcoal text, sage/teal accents, warm amber for active lights, ample white space. The design should look like a finished, professionally art-directed desktop control application.
+
+Main canvas: small label "Floor plan". The plan dominates the entire canvas. Strict orthographic bird's-eye 2D top view, NOT isometric, NOT perspective, NOT a 3D dollhouse. Draw one coherent, architecturally credible residential property: connected furnished living room, kitchen/dining area, central entry/hall and a garage with a parked car. Shared walls, correct doorway gaps and subtle door swing arcs, windows aligned in the exterior walls. Warm natural timber living-room floor, light stone kitchen tiles, quiet gray garage floor, tasteful furniture with consistent top-down geometry. Fine material detailing and restrained contact shadows are acceptable, but everything must read as a 2D architectural plan. A beautifully landscaped garden occupies the lower part of the same lot, directly adjoining the house through a terrace/sliding doorway, with a short paved path, lawn and two planted vegetable beds. The garden must be visibly integrated into the footprint/property scene, not separated into an unrelated card. Include small, uniform interactive markers on actual lamp positions, a clearly located garage motion sensor, a soil moisture probe inside a garden bed, an irrigation pump with a short watering line, and an electrical panel inside the hall. Label rooms simply "Living room", "Kitchen", "Garage", "Garden". Show an active living-room light as a very subtle warm floor tint. Highlight the selected soil probe with a tasteful teal ring and a small callout "Soil moisture 42%". Avoid cluttering the plan with control buttons.
+
+Right inspector, coherent vertical flow with restrained separators instead of nested cards:
+1. "Controls" heading, then "Main power" with an on toggle and "Classroom access" with an on toggle.
+2. "Selected device" small caption, "Soil moisture" title, "Garden" secondary text and prominent reading "42%".
+3. "Settings" label with two neatly aligned labeled fields: "Read interval" showing "1 s"; "Publish interval" showing "2 s". A tasteful teal button "Apply settings".
+4. "Irrigation" row with an on toggle labeled "Automatic", and two compact threshold inputs labeled "Start below" showing "35%" and "Stop above" showing "65%".
+5. "Connection" section with a copy affordance. Show endpoint "wss://classroom.example/mqtt", "Username" with value "classroom", and "Password" with example value "A7K2M9". Password MUST be exactly six alphanumeric characters, not a long secret. Include a small secondary "Copy connection" button.
+6. A small collapsed "Activity" row at the bottom if space permits.
+
+Text constraints: render the quoted English labels accurately, with professional spacing and consistent baselines. Keep all fields and text inside their bounds. No Portuguese. Do not include strings like Python, Pyglet, MQTT engine, /set -> engine -> /state, debug logs, or placeholder lorem ipsum on the main product surface. The example connection details are illustrative. No watermark.

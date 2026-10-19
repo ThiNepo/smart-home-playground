@@ -1,0 +1,48 @@
+SMART HOUSE — INTERFACE PROPOSAL V2
+Status: visual proposal awaiting approval. The application has not been modified.
+
+CHANGES FROM V1
+- Added Bedroom, Bathroom, and Laundry.
+- Retained Living room, Kitchen, Garage, Hall, terrace, and integrated Garden.
+- Added seven visible wall-mounted AC units: one in each of the six named indoor rooms and one in the Hall.
+- Added room temperature sensor markers.
+- Selected Bedroom AC in the right-hand inspector.
+- Showed AC power, cooling mode, current room temperature, target temperature, read interval, and publish interval.
+- Retained the shared example connection and six-character alphanumeric password A7K2M9.
+- Irrigation controls would appear contextually when a garden device is selected.
+- All visible labels are English. Connection details are illustrative.
+
+IMPLEMENTATION STATUS
+This image is a design proposal, not a screenshot of the application.
+No application code, MQTT credentials, or live configuration was changed for this revision.
+The proposed device /state and configuration-command contract still requires implementation after approval.
+
+Generation method: built-in imagegen edit, using interface-proposal-v1.png as the design reference.
+
+GENERATION PROMPT
+Use case: ui-mockup revision.
+Edit target: the referenced Smart House desktop UI proposal. Keep its polished visual style, crisp consistent English typography, restrained teal/charcoal palette, white right-hand inspector, believable materials and strict orthographic 2D bird's-eye view. The user approved this direction but requires a complete house and air conditioning in EVERY indoor room. This is a new design proposal image only, not implementation.
+
+Rebuild the floor plan to include all of these distinctly furnished, readable, connected spaces:
+1. "Living room" with sofa, coffee table, TV.
+2. "Kitchen" with counters, sink, stove and dining table.
+3. "Bedroom" with a bed, bedside tables and wardrobe.
+4. "Bathroom" with shower, toilet and vanity.
+5. "Laundry" with washer, utility sink and cabinets.
+6. "Garage" with car and storage.
+7. "Hall" with a visible electrical panel and practical access to all rooms.
+8. "Garden" outside, directly adjoining the house through a terrace and doorway, and visibly belonging to the same fenced property. Keep a substantial garden area of about a quarter to a third of the property canvas with lawn, stepping-stone path, two vegetable beds, a soil probe, irrigation pump and watering line. Never put the garden in a separate dashboard card.
+
+The six named rooms and hall must all have an unmistakable wall-mounted split air conditioner, SEVEN AC UNITS TOTAL, each drawn as a slim white horizontal appliance against an interior wall with dark vent slots and a small blue snowflake marker or compact "AC" badge. They must be individually visible and not hidden behind furniture or labels. One air conditioner in each of Living room, Kitchen, Bedroom, Bathroom, Laundry, Garage, and Hall. Show a subtle teal selection ring on the Bedroom AC. No outdoor garden AC. Add a small separate temperature sensor marker in each main room. Keep lamps and existing motion, soil and power devices positioned naturally, with unobtrusive uniform icons.
+
+Architecture: a credible compact family-home layout with a shared central hall, coherent exterior envelope, correctly placed doors, door swings and windows, and no inaccessible rooms. A useful arrangement is bedroom/bathroom/laundry along the back, living room/kitchen toward the terrace, garage along one side, connected by the hall. Resize/rearrange the property to fit all rooms without crushing room labels or sacrificing the integrated garden. Orthographic top-down view only: no isometric perspective or 3D dollhouse walls. Keep the 2D finished architectural rendering quality from the reference, not a crude rectangle wireframe. The whole UI can be a little wider/taller landscape to accommodate the expanded plan, with roughly 72% floor plan and 28% inspector. No laptop/browser frame.
+
+Header remains "Smart House" with green "Connected". Main canvas caption "Floor plan". Right inspector should now show the SELECTED BEDROOM AIR CONDITIONER, with the same beautiful spacing, lines, toggle and input styling as the reference:
+"Controls": "Main power" on toggle, "Classroom access" on toggle.
+"Selected device": "Bedroom AC", secondary "Bedroom", AC power on toggle labeled "Power".
+"Climate": "Room temperature" = "24.6 °C"; "Mode" dropdown = "Cooling"; "Target temperature" field = "22 °C".
+"Sensor settings": "Read interval" = "1 s"; "Publish interval" = "2 s"; teal "Apply settings" button.
+"Connection": "Endpoint" = "wss://classroom.example/mqtt"; "Username" = "classroom"; "Password" = "A7K2M9"; "Copy connection" secondary button.
+A collapsed "Activity" row at bottom if space allows. Irrigation settings are contextual and do not need to be visible while the Bedroom AC is selected.
+
+Exact constraints: all labels in English and correctly spelled, aligned readable text, six-character example password A7K2M9, no real secrets. No technology credits or protocol-flow footer. No Python or Pyglet branding. No extra marketing slogans. Preserve clean white space and professional hierarchy. Deliver one cohesive full-screen desktop interface proposal, not a collage or presentation board.

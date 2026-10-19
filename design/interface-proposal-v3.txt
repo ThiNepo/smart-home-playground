@@ -1,0 +1,83 @@
+SMART HOUSE — INTERFACE PROPOSAL V3
+Status: approved visual reference. Animated native implementation is now available.
+Implemented preview: design/playground-v1.png; movement frame: design/playground-v1-moving.png.
+
+ARCHITECTURE
+- Street at the front/bottom; productive garden at the rear/top of the same property.
+- Main front entrance opens directly into Living room.
+- Living room has direct access to Kitchen and separate access to Hall.
+- Hall connects the private/service rooms.
+- Bathroom and Laundry are retained.
+- Rear garden service door is in Laundry, not Bathroom.
+- Garage faces the street with an open vehicle-width threshold and a clear straight driveway.
+- Exactly four AC units: Living room, Kitchen, Bedroom, Garage.
+- No AC in Bathroom, Laundry, or Hall.
+
+MODULAR DEVICE PRESENTATION
+- Garage door position and garage contact reading are shown separately from vehicle occupancy.
+- This proposal shows garage door Open, door contact Open, and vehicle Present.
+- A simulation control can change car presence independently of the garage door.
+- Front door and one Bedroom window are monitored; other openings do not need contact sensors.
+- This proposal shows front door Open and Bedroom window Closed.
+- Selecting a different device would show its own controls and applied configuration.
+- Device /state reports current state and applied configuration; configuration changes use a separate command channel.
+- Read and publish intervals are independent.
+- Shared example credentials: classroom / A7K2M9. Illustrative only; live credentials were not modified.
+
+TRANSPORT DISCUSSION
+- The current demo uses native MQTT/TCP locally and MQTT/WSS through the public HTTP tunnel.
+- Python Paho supports both transports.
+- Native MQTT with TLS is another option when a directly accessible broker is available.
+- Concurrent-classroom capacity has not yet been load-tested.
+- No transport change was implemented during this design review.
+
+Generation method: built-in imagegen, using V2 as reference, followed by one architectural correction.
+
+BASE GENERATION PROMPT
+Use case: ui-mockup revision V3.
+Edit target: the referenced Smart House UI proposal. Keep the polished professional art direction, straight aligned English typography, neutral/teal color system, white right-hand inspector, and strict orthographic bird's-eye 2D architectural rendering. This is an APPROVAL MOCKUP ONLY. The floor-plan arrangement must change substantially to be physically credible.
+
+MANDATORY PROPERTY ORIENTATION AND ACCESS:
+- The STREET is at the BOTTOM/front of the image. Include a narrow visible road/curb strip labeled "Street".
+- The GARDEN/BACKYARD is at the TOP/rear of the property, directly attached to the rear of the house through a usable terrace/back door. The garden is part of the same lot, with lawn, two planted beds, soil-moisture marker and irrigation pump. Give it roughly a quarter of the property canvas. It must NOT be in front of the garage.
+- The GARAGE is at the front/right of the house. Its large roller-door opening faces DOWN toward the street. A broad straight unobstructed concrete driveway runs from the garage opening directly to the street. Leave that entire car-width route free of plants, fences, gates, walls, garden beds and pedestrian furniture. Show ONE car inside, oriented nose toward the street and ready to drive out.
+- The MAIN ENTRANCE must open DIRECTLY INTO THE LIVING ROOM from a short front porch and separate pedestrian path at the front/left. Draw a real front-door opening with a hinged leaf, visibly opening into the Living room, with the outside label "Main entrance". Do not route the main entrance through Kitchen, Hall, Bathroom or Garage.
+- From Living room there is a clear doorway to Kitchen and a doorway to Hall. Hall serves Bedroom, Bathroom and Laundry. Every room has a usable doorway and plausible circulation; do not require passage through Garage to reach the house.
+
+REQUIRED INDOOR ROOMS: "Living room", "Kitchen", "Bedroom", "Bathroom", "Laundry", "Garage", "Hall". Keep Bathroom: the user corrected a spoken sentence, they did not ask to delete it. Furnish each room appropriately, with professional architectural proportions and a coherent exterior wall envelope. Bedroom includes a bed and wardrobe; Bathroom shower/toilet/vanity; Laundry washer and utility sink. Kitchen counters and dining; Living room sofa/TV; Garage car/storage.
+
+AIR CONDITIONING CORRECTION:
+Exactly FOUR visible split AC units: one each in Living room, Kitchen, Bedroom and Garage. Use slim white appliances with dark vent slots and discreet blue snowflake markers, as in the reference. Absolutely NO air conditioners or snowflake AC badges in Bathroom, Laundry or Hall. Temperature/contact sensors are distinct from AC units.
+
+MODULAR OPENINGS AND SENSORS:
+- Garage roller door is visibly OPEN, raised so there is no wall or door leaf blocking the driveway.
+- A small contact-sensor marker belongs to Garage door, separate from a parking-occupancy marker.
+- The visible car inside indicates vehicle PRESENT; car presence is independent of garage-door position.
+- Front door is visibly OPEN into the Living room and has one small contact marker.
+- One Bedroom window has a small contact-sensor marker and is visibly CLOSED.
+- Do not add contact sensors to every other door. Keep light, room-temperature and garden device markers restrained and readable.
+- Keep the main property plan large; no standalone dashboard cards below it. No perspective, no isometric dollhouse.
+
+RIGHT INSPECTOR:
+Retain the same restrained layout and readability from the reference, about 28% of the screen. Header "Smart House", status "Connected"; canvas caption "Floor plan".
+Section "Controls": "Main power" on toggle, "Classroom access" on toggle.
+Section "Selected device": title "Garage door", secondary "Garage"; operating state "Open". Two properly aligned buttons "Open" and "Close".
+Read-only status rows: "Door contact" = "Open"; "Vehicle" = "Present". These are separate readings.
+A small "Simulation" row: "Car present" on toggle.
+Section "Other openings": "Front door" = "Open"; "Bedroom window" = "Closed".
+Section "Sensor settings": "Read interval" = "1 s"; "Publish interval" = "2 s"; teal button "Apply settings".
+Section "Connection": "Endpoint" = "wss://classroom.example/mqtt"; "Username" = "classroom"; "Password" = "A7K2M9"; small secondary "Copy connection" action.
+A collapsed "Activity" row only if space allows. AC and irrigation controls are contextual and do not need to be visible while Garage door is selected.
+
+QUALITY AND INVARIANTS:
+Professional, realistic residential layout and an open physical exit for the car take priority. Preserve substantial integrated rear garden, crisp top-down material rendering, clean room labels, practical field sizes, even typography baselines, and balanced composition. All text in English. No framework credits, protocol-flow captions, slogans, code, browser chrome, watermark or extra rooms. Connection values are illustrative and the password is exactly six alphanumeric characters. Deliver one cohesive landscape desktop UI proposal image.
+
+FINAL CORRECTION PROMPT
+Targeted architectural correction to the referenced Smart House V3 UI mockup. Preserve the complete interface, typography, English text, room labels, exact right-hand inspector, six-character password, furniture style, colors, backyard at TOP, street at BOTTOM, and main front entrance opening directly into Living room. Preserve exactly four AC units in Bedroom, Living room, Kitchen and Garage, with none in Bathroom, Laundry or Hall.
+
+Change ONLY these three physical architectural defects on the plan:
+1. GARAGE FRONT OPENING: At the BOTTOM of the Garage, where it meets the driveway, REMOVE the entire glass/window-like horizontal barrier, sill, crossing rails and bottom wall. The garage is OPEN as reported by the inspector. Show an unmistakably empty car-width opening between left and right door jambs. The gray garage floor must continue seamlessly into the concrete driveway so the parked car can drive straight DOWN to the street. A thin paving seam is fine; no closed panel or glazed element may cross the route. Represent the raised roller shutter as retracted above the opening, not as something lying across the floor. Put the small contact sensor on a side jamb instead of floating in the center of the driveway threshold. Keep the car fully parked inside and its travel path empty.
+2. REAR SERVICE DOOR: Remove the back-garden doorway that currently opens into the BATHROOM at the upper middle of the house. Close that bathroom exterior opening with a wall/window. Add the rear garden access door instead on the TOP/exterior wall of LAUNDRY, with a clear floor path between that door and Laundry's existing Hall door. This rear service door opens onto the garden terrace. Keep the bathroom's interior Hall access.
+3. LIVING ROOM TO KITCHEN: Replace a clear section of the vertical partition shared by Living room and Kitchen with a generous, unmistakable open interior passage. No glass, window, door slab or solid wall across this passage. Living room must connect directly to Kitchen, as well as retaining its separate Hall access. Preserve the front-door opening into Living room at the front/left.
+
+Audit the result visually: car has a truly open path to the road; garden rear access comes from Laundry rather than Bathroom; direct open passage joins Living room and Kitchen. Do not change any other design decision. Produce the same polished full-screen top-down 2D mockup.

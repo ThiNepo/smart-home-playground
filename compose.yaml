@@ -1,0 +1,23 @@
+services:
+  password-init:
+    image: eclipse-mosquitto:2.0.22
+    profiles: [setup]
+    volumes:
+      - ./.runtime/mosquitto:/mosquitto/config:rw
+    entrypoint: ["mosquitto_passwd"]
+    command: ["-U", "/mosquitto/config/passwords"]
+  broker:
+    image: eclipse-mosquitto:2.0.22
+    restart: "no"
+    ports:
+      - "127.0.0.1:18883:1883"
+      - "127.0.0.1:19001:9001"
+    volumes:
+      - ./.runtime/mosquitto:/mosquitto/config:ro
+    command: ["mosquitto", "-c", "/mosquitto/config/mosquitto.conf"]
+  tunnel:
+    image: cloudflare/cloudflared:2026.10.1
+    profiles: [remote]
+    restart: "no"
+    depends_on: [broker]
+    command: ["tunnel", "--no-autoupdate", "--protocol", "http2", "--url", "http://broker:9001"]
