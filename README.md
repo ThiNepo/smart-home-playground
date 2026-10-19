@@ -6,6 +6,9 @@ house responds to their commands.
 
 ![Smart Home Playground with an interactive floor plan and device inspector](design/playground-v2.png)
 
+Actual application in Offline mode at 1920 x 1080, with actuators manually
+enabled to demonstrate lighting, open doors, cooling, and irrigation.
+
 ## What it provides
 
 - Seven rooms with independent lighting, four air conditioners, a motorized
@@ -19,9 +22,9 @@ house responds to their commands.
 
 **Students write the automation.** The simulator models the environment and
 actuators; it has no built-in rules to switch lights, start watering, or run
-schedules. Sensor values and the clock are read-only over MQTT. Manual doors
-and windows are operated locally; only the motorized garage accepts remote
-opening commands.
+schedules. Sensor values and the clock are read-only through the MQTT command
+API. Manual doors and windows are operated locally; only the motorized garage
+accepts remote opening commands.
 
 Built with Python, Pyglet, Paho MQTT, Mosquitto, and Cloudflare Tunnel.
 
@@ -68,7 +71,10 @@ Classroom access can be paused while local controls and telemetry remain active.
 The connection panel and `.runtime/connection.json` contain the current
 endpoint and credentials. The shared username is `classroom`; a six-character
 alphanumeric password is generated locally and reused between sessions.
-Each student client uses a unique connection ID.
+Each student client uses a unique connection ID. This shared account has
+broker read/write access to `house/#`, so the demo assumes trusted classroom
+participants: custom clients can publish counterfeit telemetry. The command
+API rejects sensor writes; the broker does not enforce telemetry ownership.
 
 The public tunnel address changes between sessions. Startup waits up to
 90 seconds for it; if unavailable, local MQTT remains available. The tunnel

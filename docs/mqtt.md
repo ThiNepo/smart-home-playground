@@ -199,3 +199,8 @@ and movement duration belong to the local configuration file.
 `StudentClient.state()` returns the last received state, or `None` before one
 arrives. `observe()` keeps the program alive while its network thread receives
 messages; it does not request a new sensor reading.
+
+The shared classroom account has broker read/write access to `house/#`.
+The house rejects sensor setters, but a custom client can publish counterfeit
+`/state`, clock, or availability messages directly to the broker. This demo
+assumes trusted participants; it does not enforce publisher ownership.

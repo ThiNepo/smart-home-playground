@@ -2,9 +2,11 @@
 from pathlib import Path
 import json
 import pyglet
+from smarthouse.compatibility import WindowsFontCompatibility
 
 pyglet.options.win32_gdi_font = True
 pyglet.options.text_shaping = False
+WindowsFontCompatibility.apply()
 
 from pyglet import shapes
 from pyglet.math import Mat4
@@ -23,7 +25,17 @@ class WindowLayout:
         self.padding = 28 if self.panel_width >= 420 else 24
         self.inner_x = self.panel_x + self.padding
         self.inner_width = self.panel_width - self.padding * 2
-        self.header_height = 80 * self.scale
+        self.header_height = 64 * self.scale
+        self.button_height = max(32, round(40 * self.scale))
+        self.control_gap = max(10, round(12 * self.scale))
+        self.footer_bottom = self.padding
+        self.footer_copy_y = self.footer_bottom + self.button_height + self.control_gap
+        self.footer_password_y = self.footer_copy_y + self.button_height + 14 * self.scale
+        self.footer_username_y = self.footer_password_y + 30 * self.scale
+        self.footer_endpoint_y = self.footer_username_y + 66 * self.scale
+        self.footer_caption_y = self.footer_endpoint_y + 24 * self.scale
+        self.footer_title_y = self.footer_caption_y + 28 * self.scale
+        self.footer_top_y = self.footer_title_y + 30 * self.scale
 
     def y(self, reference):
         return reference * self.scale
@@ -37,7 +49,7 @@ class PlanViewport:
     def __init__(self, layout):
         self.layout = layout
         available_width = layout.panel_x
-        available_height = layout.height - layout.header_height - 44 * layout.scale
+        available_height = layout.height - layout.header_height - 36 * layout.scale
         self.scale = min(available_width / 1010, available_height / 810)
         self.x = (available_width - 1010 * self.scale) / 2
         self.y = (available_height - 810 * self.scale) / 2
@@ -94,23 +106,23 @@ class DeviceInspector:
         self.rows.clear()
         self.toggles.clear()
 
-    def text(self, text, y, size=12, color=INK, **kwargs):
+    def text(self, text, y, size=12, color=INK, screen_y=None, **kwargs):
         layout = self.window.layout
-        return self.window.label(text, layout.inner_x, layout.y(y), layout.font(size), color, layer=14, **kwargs)
+        return self.window.label(text, layout.inner_x, layout.y(y) if screen_y is None else screen_y, layout.font(size), color, layer=14, **kwargs)
 
-    def row(self, title, y, getter):
+    def row(self, title, y, getter, screen_y=None):
         layout = self.window.layout
-        self.text(title, y, color=MUTED)
-        label = self.window.label("", layout.inner_x + layout.inner_width, layout.y(y), layout.font(), INK,
+        self.text(title, y, color=MUTED, screen_y=screen_y)
+        label = self.window.label("", layout.inner_x + layout.inner_width, layout.y(y) if screen_y is None else screen_y, layout.font(), INK,
                                   layer=14, anchor_x="right")
         self.rows.append((label, getter))
         return label
 
-    def button(self, text, y, callback, column=0, columns=1, secondary=False):
+    def button(self, text, y, callback, column=0, columns=1, secondary=False, screen_y=None):
         layout = self.window.layout
         width = (layout.inner_width - (columns - 1) * 12) / columns
-        control = Button(self.window, text, layout.inner_x + column * (width + 12), layout.y(y), width,
-                         callback, height=40 * layout.scale, secondary=secondary, font_size=layout.font())
+        control = Button(self.window, text, layout.inner_x + column * (width + 12), layout.y(y) if screen_y is None else screen_y, width,
+                         callback, height=layout.button_height, secondary=secondary, font_size=layout.font())
         self.controls.append(control)
         return control
 
@@ -122,10 +134,10 @@ class DeviceInspector:
         self.toggles.append(control)
         return control
 
-    def field(self, name, title, y, value, minimum, maximum, step=1, unit=""):
+    def field(self, name, title, y, value, minimum, maximum, step=1, unit="", screen_y=None):
         layout = self.window.layout
-        control = NumericField(self.window, name, title, layout.inner_x, layout.y(y), value, minimum, maximum,
-                               step, unit, width=layout.inner_width, height=38 * layout.scale, font_size=layout.font())
+        control = NumericField(self.window, name, title, layout.inner_x, layout.y(y) if screen_y is None else screen_y, value, minimum, maximum,
+                               step, unit, width=layout.inner_width, height=max(32, round(38 * layout.scale)), font_size=layout.font())
         self.fields[name] = control
         self.controls.extend([control.minus, control.plus, control])
         return control
@@ -137,18 +149,27 @@ class DeviceInspector:
             self.window.command(*self.selection, value)
 
     def on_off_buttons(self):
-        self.button("Turn on", 644, lambda: self.action("ON"), columns=2)
-        self.button("Turn off", 644, lambda: self.action("OFF"), column=1, columns=2, secondary=True)
+        self.button("Turn on", 660, lambda: self.action("ON"), columns=2)
+        self.button("Turn off", 660, lambda: self.action("OFF"), column=1, columns=2, secondary=True)
 
-    def sensor_settings(self, top=599):
+    def sensor_settings(self, top=615):
+        layout = self.window.layout
         self.text("SENSOR SETTINGS", top, 10, MUTED, weight="bold")
-        self.field("read_interval", "Read interval", top - 43, self.device.config["read_interval"], .1, 60, .5, " s")
-        self.field("publish_interval", "Publish interval", top - 91, self.device.config["publish_interval"], .1, 300, .5, " s")
-        self.button("Apply settings", top - 158, self.apply_settings)
+        read_y = layout.y(top) - max(30, 43 * layout.scale)
+        publish_y = read_y - max(40, 48 * layout.scale)
+        self.field("read_interval", "Read interval", 0, self.device.config["read_interval"], .1, 60, .5, " s", screen_y=read_y)
+        self.field("publish_interval", "Publish interval", 0, self.device.config["publish_interval"], .1, 300, .5, " s", screen_y=publish_y)
+        self.settings_button(publish_y)
 
-    def publication_settings(self, top=544):
+    def publication_settings(self, top=560):
         self.field("publish_interval", "Publish interval", top, self.device.config["publish_interval"], .1, 300, .5, " s")
-        self.button("Apply settings", top - 67, self.apply_settings)
+        self.settings_button(self.window.layout.y(top))
+
+    def settings_button(self, field_y):
+        layout = self.window.layout
+        field_height = max(32, round(38 * layout.scale))
+        y = field_y - field_height / 2 - layout.control_gap - layout.button_height
+        self.button("Apply settings", 0, self.apply_settings, screen_y=y)
 
     def build(self, preserve_fields=False):
         saved = {name: field.value for name, field in self.fields.items() if preserve_fields and field.dirty}
@@ -158,60 +179,60 @@ class DeviceInspector:
         w.capture, w.drawing_batch = self.items, w.ui_batch
         w.rect(layout.panel_x, 0, layout.panel_width, w.height - layout.header_height, WHITE, layer=10)
         w.line(layout.panel_x, 0, layout.panel_x, w.height - layout.header_height, BORDER, width=1, layer=11)
-        self.text("Controls", 960, 20, weight="bold")
-        self.toggle("Main power", 916, lambda: house.breaker.enabled, w.toggle_breaker)
-        self.toggle("Classroom access", 872, lambda: w.application.students_enabled, w.toggle_students)
-        w.line(layout.inner_x, layout.y(842), layout.inner_x + layout.inner_width, layout.y(842), BORDER, width=1, layer=11)
-        self.text("SELECTED DEVICE", 814, 10, MUTED, weight="bold")
+        self.text("Controls", 976, 18, weight="bold")
+        self.toggle("Main power", 932, lambda: house.breaker.enabled, w.toggle_breaker)
+        self.toggle("Classroom access", 888, lambda: w.application.students_enabled, w.toggle_students)
+        w.line(layout.inner_x, layout.y(858), layout.inner_x + layout.inner_width, layout.y(858), BORDER, width=1, layer=11)
+        self.text("SELECTED DEVICE", 830, 10, MUTED, weight="bold")
         area, kind = self.selection
         title = self.OPENING_TITLES[kind] if area == "opening" else self.TITLES.get(kind, kind.replace("_", " ").title())
-        self.text(title, 776, 25, weight="bold")
-        self.text("Manual opening" if area == "opening" else area.replace("_", " ").title(), 751, 12, MUTED)
-        self.state_label = self.text("", 708, 18, TEAL, weight="bold")
-        self.message = self.text("", 309, 10, TEAL)
+        self.text(title, 792, 22, weight="bold")
+        self.text("Manual opening" if area == "opening" else area.replace("_", " ").title(), 767, 12, MUTED)
+        self.state_label = self.text("", 724, 16, TEAL, weight="bold")
+        self.message = self.text("", 0, 10, TEAL, screen_y=layout.footer_top_y + 8 * layout.scale)
         if area == "opening" or self.selection == ("garage", "door"):
-            self.button("Open", 644, lambda: self.action("OPEN"), columns=2)
-            self.button("Close", 644, lambda: self.action("CLOSE"), column=1, columns=2, secondary=True)
-            self.row("Physical position", 620, lambda: f"{self.device.position * 100:.0f}% open")
+            self.button("Open", 660, lambda: self.action("OPEN"), columns=2)
+            self.button("Close", 660, lambda: self.action("CLOSE"), column=1, columns=2, secondary=True)
+            self.row("Physical position", 636, lambda: f"{self.device.position * 100:.0f}% open")
             if self.device.contact is not None:
-                self.row("Contact reading", 584, lambda: "Closed" if self.device.contact.value else "Open")
+                self.row("Contact reading", 600, lambda: "Closed" if self.device.contact.value else "Open")
                 opening_name = kind if area == "opening" else "garage_door"
-                self.button("Contact sensor", 521, lambda: self.select(self.CONTACTS[opening_name]), secondary=True)
+                self.button("Contact sensor", 537, lambda: self.select(self.CONTACTS[opening_name]), secondary=True)
             else:
-                self.row("Contact sensor", 584, lambda: "Not installed")
+                self.row("Contact sensor", 600, lambda: "Not installed")
             if area != "opening":
-                self.row("Vehicle", 475, lambda: "Present" if house.car_sensor.value else "Absent")
-                self.publication_settings(427)
+                self.row("Vehicle", 491, lambda: "Present" if house.car_sensor.value else "Absent")
+                self.publication_settings(443)
         elif kind == "air_conditioner":
             self.on_off_buttons()
-            self.row("Room temperature", 620, lambda: f"{self.device.temperature.value:.1f} C")
-            self.field("setpoint", "Target temperature", 574, self.device.setpoint, 16, 30, unit=" C")
-            self.row("Mode", 532, lambda: self.device.mode.title())
-            self.button("Change mode", 478, self.cycle_mode, secondary=True)
-            self.publication_settings(427)
+            self.row("Room temperature", 636, lambda: f"{self.device.temperature.value:.1f} C")
+            self.field("setpoint", "Target temperature", 590, self.device.setpoint, 16, 30, unit=" C")
+            self.row("Mode", 548, lambda: self.device.mode.title())
+            self.button("Change mode", 494, self.cycle_mode, secondary=True)
+            self.publication_settings(443)
         elif kind == "irrigation":
             self.on_off_buttons()
-            self.row("Soil moisture", 620, lambda: f"{house.moisture_sensor.value:.1f}%")
-            self.button("Soil sensor", 558, lambda: self.select(("garden", "moisture")), secondary=True)
-            self.publication_settings(493)
+            self.row("Soil moisture", 636, lambda: f"{house.moisture_sensor.value:.1f}%")
+            self.button("Soil sensor", 574, lambda: self.select(("garden", "moisture")), secondary=True)
+            self.publication_settings(509)
         elif kind in ("light", "breaker"):
             self.on_off_buttons()
             if kind == "light":
-                self.row("Power supply", 620, lambda: "Available" if house.breaker.enabled else "Off")
-            self.publication_settings(550)
+                self.row("Power supply", 636, lambda: "Available" if house.breaker.enabled else "Off")
+            self.publication_settings(566)
         else:
             if kind == "car_presence":
-                self.text("SCENE INTERACTION", 659, 10, MUTED, weight="bold")
-                self.toggle("Car present", 620, lambda: house.car_sensor.physical_value,
+                self.text("SCENE INTERACTION", 675, 10, MUTED, weight="bold")
+                self.toggle("Car present", 636, lambda: house.car_sensor.physical_value,
                             lambda: w.scene_input("garage", "car_presence", not house.car_sensor.physical_value))
-                self.sensor_settings(559)
+                self.sensor_settings(575)
             elif kind == "motion":
-                self.text("SCENE INTERACTION", 659, 10, MUTED, weight="bold")
-                self.button("Movement", 599, lambda: w.scene_input("garage", "motion", True), columns=2, secondary=True)
-                self.button("Clear", 599, lambda: w.scene_input("garage", "motion", False), column=1, columns=2, secondary=True)
-                self.sensor_settings(553)
+                self.text("SCENE INTERACTION", 675, 10, MUTED, weight="bold")
+                self.button("Movement", 615, lambda: w.scene_input("garage", "motion", True), columns=2, secondary=True)
+                self.button("Clear", 615, lambda: w.scene_input("garage", "motion", False), column=1, columns=2, secondary=True)
+                self.sensor_settings(569)
             else:
-                self.sensor_settings(629)
+                self.sensor_settings(645)
         self.connection()
         for name, value in saved.items():
             if name in self.fields:
@@ -224,21 +245,22 @@ class DeviceInspector:
 
     def connection(self):
         w, layout = self.window, self.window.layout
-        w.line(layout.inner_x, layout.y(285), layout.inner_x + layout.inner_width, layout.y(285), BORDER, width=1, layer=11)
-        self.text("Connection", 256, 17, weight="bold")
-        self.text("Endpoint", 230, 10, MUTED)
+        w.line(layout.inner_x, layout.footer_top_y, layout.inner_x + layout.inner_width,
+               layout.footer_top_y, BORDER, width=1, layer=11)
+        self.text("Connection", 0, 15, weight="bold", screen_y=layout.footer_title_y)
+        self.text("Endpoint", 0, 10, MUTED, screen_y=layout.footer_caption_y)
         infrastructure = w.application.infrastructure
         endpoint = infrastructure.url if infrastructure else "Offline simulation"
         font_size = layout.font(11)
         wrapped = w.wrap_text(endpoint, layout.inner_width, font_size, 2)
-        self.endpoint_label = w.label(wrapped, layout.inner_x, layout.y(207), font_size, INK, layer=14,
-                                     width=layout.inner_width, multiline=True)
+        self.endpoint_label = w.label(wrapped, layout.inner_x, layout.footer_endpoint_y, font_size, INK,
+                                     layer=14, width=layout.inner_width, multiline=True)
         self.endpoint_text = endpoint
         credentials = infrastructure.credentials if infrastructure else {}
-        self.row("Username", 140, lambda: credentials.get("username", "--"))
-        self.row("Password", 110, lambda: credentials.get("password", "--"))
-        self.button("Copy connection", 56, w.copy_connection, secondary=True)
-        self.button("Activity", 9, w.toggle_activity, secondary=True)
+        self.row("Username", 0, lambda: credentials.get("username", "--"), screen_y=layout.footer_username_y)
+        self.row("Password", 0, lambda: credentials.get("password", "--"), screen_y=layout.footer_password_y)
+        self.button("Copy connection", 0, w.copy_connection, secondary=True, screen_y=layout.footer_copy_y)
+        self.button("Activity", 0, w.toggle_activity, secondary=True, screen_y=layout.footer_bottom)
 
     def apply_settings(self):
         self.window.focus_field(None)
@@ -275,6 +297,13 @@ class DeviceInspector:
             text = str(state["value"]).replace("_", " ").title()
         if self.state_label.text != text:
             self.state_label.text = text
+        active = state["value"] in ("ON", "OPEN", "OPENING", "CLOSING")
+        if kind.endswith("_contact"):
+            active = not state["value"]
+        elif kind in ("car_presence", "motion"):
+            active = bool(state["value"])
+        color = (155, 106, 28) if text == "Waiting for power" else (TEAL if active else INK)
+        self.state_label.color = (*color, 255)
         for label, getter in self.rows:
             text = getter()
             if label.text != text:
@@ -329,14 +358,14 @@ class SmartHouseWindow(pyglet.window.Window):
         self.rect(0, self.height - layout.header_height, self.width, layout.header_height, WHITE, layer=10)
         self.line(0, self.height - layout.header_height, self.width, self.height - layout.header_height,
                   BORDER, width=1, layer=11)
-        self.label("Smart House", 28, layout.y(1040), layout.font(28), INK, layer=14, weight="bold", anchor_y="center")
-        self.label("Floor plan", 28, layout.y(976), layout.font(13), INK, layer=9, weight="bold")
-        self.label("Select a device or a door", layout.panel_x - 28, layout.y(976), layout.font(11),
+        self.label("Smart House", 28, self.height - layout.header_height / 2, layout.font(24), INK, layer=14, weight="bold", anchor_y="center")
+        self.label("Floor plan", 28, layout.y(990), layout.font(12), INK, layer=9, weight="bold")
+        self.label("Select a device or a door", layout.panel_x - 28, layout.y(990), layout.font(11),
                    MUTED, layer=9, anchor_x="right")
-        self.clock_label = self.label("", self.width - 225, layout.y(1040), layout.font(22), INK,
+        self.clock_label = self.label("", self.width - 225, self.height - layout.header_height / 2, layout.font(18), INK,
                                       layer=14, anchor_x="right", anchor_y="center", weight="bold")
-        self.status_dot = self.circle(self.width - 174, layout.y(1040), 4, TEAL, layer=14)
-        self.status_label = self.label("", self.width - 158, layout.y(1040), layout.font(12), MUTED,
+        self.status_dot = self.circle(self.width - 174, self.height - layout.header_height / 2, 4, TEAL, layer=14)
+        self.status_label = self.label("", self.width - 158, self.height - layout.header_height / 2, layout.font(11), MUTED,
                                        layer=14, anchor_y="center")
         self.capture, self.drawing_batch = None, None
         if self.inspector is None:

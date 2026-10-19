@@ -1,8 +1,8 @@
 """Small native controls with consistent typography and explicit interaction states."""
 
 INK = (30, 45, 55)
-MUTED = (109, 124, 133)
-TEAL = (13, 151, 143)
+MUTED = (92, 108, 117)
+TEAL = (10, 128, 122)
 BORDER = (219, 227, 229)
 WHITE = (255, 255, 255)
 
@@ -32,7 +32,7 @@ class Button:
 
     def hover(self, active):
         self.hovered = active
-        self.back.color = ((176, 200, 204) if active else BORDER) if self.secondary else ((8, 127, 120) if active else TEAL)
+        self.back.color = ((176, 200, 204) if active else BORDER) if self.secondary else ((7, 110, 105) if active else TEAL)
 
 
 class Toggle:
@@ -177,7 +177,7 @@ class ActivityOverlay:
         window.label("Recent commands and connection events", x + 28, y + height - 75 * scale,
                      max(10, 12 * scale), MUTED, layer=14)
         self.close_button = Button(window, "Close", x + width - 128, y + height - 58 * scale,
-                                   100, self.toggle, height=36 * scale, secondary=True, font_size=max(10, 12 * scale))
+                                   100, self.toggle, height=max(32, round(36 * scale)), secondary=True, font_size=max(10, 12 * scale))
         self.labels = [window.label("", x + 28, y + height - (122 + index * 52) * scale,
                                     max(10, 11 * scale), INK, layer=14, width=width - 56, multiline=True)
                        for index in range(7)]

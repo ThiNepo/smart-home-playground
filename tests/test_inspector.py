@@ -31,6 +31,7 @@ class TestDeviceInspector:
     def test_reference_size_and_time_only_header(self, window):
         assert window.get_size() == (1920, 1080)
         assert window.layout.panel_width == 480
+        assert window.layout.header_height == 64
         assert window.clock_label.text == "08:00"
         window.update(1 / 6)
         assert window.clock_label.text == "08:01"
@@ -100,7 +101,7 @@ class TestDeviceInspector:
             x, y, width, height = control.bounds
             assert x >= layout.panel_x
             assert x + width <= window.width
-            assert y >= 0
+            assert y >= layout.padding
             assert y + height <= window.height - layout.header_height
         point = window.floor_plan.switch_positions["kitchen"]
         converted = window.screen_to_plan(window.plan_to_screen(point))
@@ -151,3 +152,43 @@ class TestDeviceInspector:
         window.refresh(0)
         assert inspector.device.position > position
         assert inspector.state_label.text == "Opening"
+
+    @pytest.mark.parametrize("size", [(1920,1080), (1100,760)])
+    def test_all_contexts_keep_footer_padding_and_separate_action_regions(self, window, size):
+        from smarthouse.widgets import Button
+        self.resize(window, *size)
+        selections = (("garage", "door"), ("opening", "bedroom_door"), ("garden", "moisture"),
+                      ("garage", "motion"), ("garage", "car_presence"), ("kitchen", "air_conditioner"),
+                      ("garden", "irrigation"), ("living_room", "light"))
+        for selection in selections:
+            window.inspector.select(selection)
+            principal = []
+            for control in window.inspector.controls:
+                label = getattr(control, "label", None)
+                title = label.text if label else ""
+                if title in ("-", "+"):
+                    continue
+                x, y, width, height = control.bounds
+                if isinstance(control, Button):
+                    assert height >= 32
+                if title == "Activity":
+                    assert y == window.layout.padding
+                elif title == "Copy connection":
+                    assert y >= window.layout.padding + window.layout.button_height + 10
+                else:
+                    assert y >= window.layout.footer_top_y + 8
+                principal.append(control)
+            for index, first in enumerate(principal):
+                ax, ay, aw, ah = first.bounds
+                for second in principal[index + 1:]:
+                    bx, by, bw, bh = second.bounds
+                    intersects = ax < bx + bw and ax + aw > bx and ay < by + bh and ay + ah > by
+                    assert not intersects, (selection, first.bounds, second.bounds)
+        window.inspector.select(("living_room", "light"))
+        window.inspector.action("OFF")
+        window.refresh(0)
+        from smarthouse.widgets import INK, TEAL
+        assert window.inspector.state_label.color == (*INK,255)
+        window.inspector.action("ON")
+        window.refresh(0)
+        assert window.inspector.state_label.color == (*TEAL,255)

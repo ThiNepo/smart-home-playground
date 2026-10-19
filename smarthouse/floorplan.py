@@ -133,7 +133,7 @@ class GarageDoorVisual:
         window.rect(757, 179, 6, 29, (115, 128, 121), layer=7)
         window.rect(938, 179, 6, 29, (115, 128, 121), layer=7)
         self.contact = window.circle(943, 204, 4, ScenePalette.TEAL, layer=8)
-        self.status = window.label("Closed", 850, 216, 8, ScenePalette.MUTED, layer=9, anchor_x="center")
+        self.status = window.label("Closed", 850, 216, 8, ScenePalette.INK, layer=9, anchor_x="center")
 
     def update(self, device):
         self.position = max(0.0, min(1.0, device.position))
